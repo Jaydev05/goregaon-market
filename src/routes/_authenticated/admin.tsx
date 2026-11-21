@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { LogOut, LayoutDashboard, Package, ShoppingBag, Users, Ticket, Image, Wallet, Settings } from "lucide-react";
+import { LogOut, LayoutDashboard, Package, ShoppingBag, Users, Ticket, Image, Wallet, Settings, FolderTree, Gift } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useSignOut } from "@/lib/auth";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { AdminProducts } from "@/components/admin/AdminProducts";
+import { AdminCategories } from "@/components/admin/AdminCategories";
+import { AdminCombos } from "@/components/admin/AdminCombos";
 import { AdminOrders } from "@/components/admin/AdminOrders";
 import { AdminCustomers } from "@/components/admin/AdminCustomers";
 import { AdminCoupons } from "@/components/admin/AdminCoupons";
@@ -22,9 +24,9 @@ export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
     meta: [
       { title: "Admin panel — Goregaon Mart" },
-      { name: "description", content: "Manage products, orders, customers, coupons, coins and delivery." },
+      { name: "description", content: "Manage products, sizes, categories, combos, orders, customers, coupons and delivery." },
       { property: "og:title", content: "Admin panel — Goregaon Mart" },
-      { property: "og:description", content: "Manage products, orders, customers, coupons, coins and delivery." },
+      { property: "og:description", content: "Manage products, sizes, categories, combos, orders, customers, coupons and delivery." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
@@ -37,6 +39,8 @@ const TABS = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, C: AdminDashboard },
   { id: "orders", label: "Orders", icon: ShoppingBag, C: AdminOrders },
   { id: "products", label: "Products", icon: Package, C: AdminProducts },
+  { id: "categories", label: "Categories", icon: FolderTree, C: AdminCategories },
+  { id: "combos", label: "Combo offers", icon: Gift, C: AdminCombos },
   { id: "customers", label: "Customers", icon: Users, C: AdminCustomers },
   { id: "coupons", label: "Coupons", icon: Ticket, C: AdminCoupons },
   { id: "banners", label: "Offer banners", icon: Image, C: AdminBanners },

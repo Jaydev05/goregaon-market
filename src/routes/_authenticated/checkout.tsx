@@ -96,7 +96,7 @@ function Checkout() {
     if (!loc) { toast.error("Please share your delivery location"); return; }
     setPlacing(true);
     const { data, error } = await supabase.rpc("place_order", {
-      _items: cart.items.map((i) => ({ product_id: i.product_id, qty: i.qty })),
+      _items: cart.items.map((i) => (i.combo_id ? { combo_id: i.combo_id, qty: i.qty } : { product_id: i.product_id, variant_id: i.variant_id ?? null, qty: i.qty })),
       _coupon_code: applied?.code ?? "",
       _coins_to_use: totals?.coinsUsed ?? 0,
       _name: name, _phone: phone, _address: address, _lat: loc.lat, _lng: loc.lng,
@@ -175,7 +175,7 @@ function Checkout() {
       <aside className="h-fit rounded-2xl border bg-card p-4 md:sticky md:top-20">
         <h2 className="mb-3 font-semibold">Order summary</h2>
         <ul className="mb-3 space-y-1 text-sm">
-          {cart.items.map((i) => <li key={i.product_id} className="flex justify-between gap-2"><span className="line-clamp-1">{i.qty} × {i.name}</span><span>{inr(i.qty * i.price)}</span></li>)}
+          {cart.items.map((i) => <li key={i.key} className="flex justify-between gap-2"><span className="line-clamp-1">{i.qty} × {i.name}</span><span>{inr(i.qty * i.price)}</span></li>)}
         </ul>
         <dl className="space-y-2 border-t pt-3 text-sm">
           <div className="flex justify-between"><dt>Items total</dt><dd>{inr(cart.subtotal)}</dd></div>

@@ -8,6 +8,13 @@
       "when": 1795254094680,
       "tag": "0000_store_core_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1795255558662,
+      "tag": "0001_variants_categories_combos",
+      "breakpoints": true
     }
   ]
 }

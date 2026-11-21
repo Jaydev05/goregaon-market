@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
-import { Search, Truck, Coins, ShoppingBag, ArrowRight, ArrowUpRight, MapPin, Zap } from "lucide-react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { Search, Truck, Coins, ShoppingBag, ArrowRight, ArrowUpRight, MapPin, Zap, Gift, LayoutGrid } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
-import { AddControl, ProductCard } from "@/components/shop/ProductCard";
+import { AddControl, LineAddControl, ProductCard } from "@/components/shop/ProductCard";
+import { comboLine, comboView, matchesSearch } from "@/lib/variants";
 import { catalogQuery } from "@/lib/queries";
 import { inr, offerPercent } from "@/lib/pricing";
 
@@ -27,11 +28,12 @@ const PASTELS = ["bg-pastel-1", "bg-pastel-2", "bg-pastel-3", "bg-pastel-4"];
 
 function Home() {
   const { data } = useSuspenseQuery(catalogQuery);
-  const { settings: s, banners, products } = data;
+  const { settings: s, banners, products, categories: allCats, combos } = data;
   const [api, setApi] = useState<CarouselApi>();
   const [slide, setSlide] = useState(0);
   const [q, setQ] = useState("");
-  const [cat, setCat] = useState("All");
+  const [catId, setCatId] = useState<string | null>(null);
+  const [subId, setSubId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!api) return;
@@ -41,14 +43,21 @@ function Home() {
     return () => { clearInterval(t); api.off("select", onSel); };
   }, [api]);
 
-  const categories = useMemo(() => ["All", ...Array.from(new Set(products.map((p) => p.category)))], [products]);
+  const topCats = useMemo(() => allCats.filter((c) => !c.parent_id && products.some((p) => p.category_id === c.id)), [allCats, products]);
+  const subCats = useMemo(() => allCats.filter((c) => catId && c.parent_id === catId), [allCats, catId]);
+  const activeCat = topCats.find((c) => c.id === catId);
+  const liveCombos = useMemo(
+    () => combos.flatMap((c) => { const v = comboView(c, products); return v ? [{ c, v }] : []; }),
+    [combos, products],
+  );
+  const chooseCat = (id: string | null) => { setCatId(id); setSubId(null); };
   const deals = useMemo(
     () => products.filter((p) => offerPercent(p.mrp, p.selling_price) > 0)
       .sort((a, b) => offerPercent(b.mrp, b.selling_price) - offerPercent(a.mrp, a.selling_price)).slice(0, 8),
     [products],
   );
   const filtered = products.filter(
-    (p) => (cat === "All" || p.category === cat) && (q === "" || `${p.name} ${p.description}`.toLowerCase().includes(q.toLowerCase())),
+    (p) => (!catId || p.category_id === catId) && (!subId || p.subcategory_id === subId) && matchesSearch(p, q),
   );
   const toShop = () => document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" });
 
@@ -110,6 +119,34 @@ function Home() {
         </section>
       )}
 
+      {/* Combo offers */}
+      {liveCombos.length > 0 && q === "" && (
+        <section className="mt-6">
+          <div className="flex items-end justify-between">
+            <h2 className="flex items-center gap-2 font-display text-xl font-extrabold md:text-3xl"><Gift className="h-5 w-5 text-primary" /> Combo offers</h2>
+            <span className="text-xs font-semibold text-muted-foreground">Bundle &amp; save</span>
+          </div>
+          <div className="scrollbar-none -mx-4 mt-3 flex snap-x gap-3 overflow-x-auto px-4 pb-1">
+            {liveCombos.map(({ c, v }, i) => (
+              <div key={c.id} data-combo-card className={`animate-fade-up flex w-72 shrink-0 snap-start flex-col overflow-hidden rounded-[1.75rem] shadow-card md:w-80 ${PASTELS[(i + 1) % PASTELS.length]}`}>
+                <div className="relative aspect-[16/9] bg-card/60">
+                  {(c.image_url ?? v.parts[0]?.image) && <img src={c.image_url ?? v.parts[0]?.image} alt={c.title} loading="lazy" className="h-full w-full object-cover" />}
+                  {v.save > 0 && <span className="absolute left-3 top-3 rounded-full bg-accent px-2.5 py-1 text-[11px] font-extrabold text-accent-foreground">Save {inr(v.save)}</span>}
+                </div>
+                <div className="flex flex-1 flex-col gap-1 p-4 text-foreground">
+                  <p className="font-display text-lg font-extrabold leading-tight">{c.title}</p>
+                  <p className="line-clamp-2 text-xs opacity-75">{v.parts.map((x) => `${x.qty > 1 ? `${x.qty} × ` : ""}${x.name}`).join(" + ")}</p>
+                  <div className="mt-auto flex items-end justify-between gap-2 pt-2">
+                    <span className="leading-tight"><s className="block text-[11px] opacity-60">{inr(v.mrp)}</s><b className="font-display text-xl">{inr(c.combo_price)}</b></span>
+                    {v.available > 0 ? <LineAddControl line={comboLine(c, v)} flyFrom="[data-combo-card]" /> : <span className="text-xs font-bold text-destructive">Sold out</span>}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Daily deals */}
       {deals.length > 0 && q === "" && (
         <section className="mt-6 rounded-[2rem] bg-primary py-5 text-primary-foreground md:py-7">
@@ -140,17 +177,25 @@ function Home() {
       {/* Catalogue */}
       <section id="shop" className="scroll-mt-20 pt-7">
         <div className="mb-3 flex items-end justify-between">
-          <h2 className="font-display text-2xl font-extrabold tracking-tight md:text-4xl">{cat === "All" ? "Explore" : cat}</h2>
+          <h2 className="font-display text-2xl font-extrabold tracking-tight md:text-4xl">{activeCat ? activeCat.name : "Explore"}</h2>
           <span className="text-xs font-semibold text-muted-foreground">{filtered.length} items</span>
         </div>
-        <div className="scrollbar-none -mx-4 flex gap-2 overflow-x-auto px-4">
-          {categories.map((c) => (
-            <button key={c} onClick={() => setCat(c)}
-              className={`shrink-0 rounded-full px-4 py-2 text-sm font-bold transition duration-300 active:scale-95 ${cat === c ? "bg-primary text-primary-foreground shadow-card" : "bg-card text-muted-foreground hover:text-foreground"}`}>
-              {c}
-            </button>
+        <div className="scrollbar-none -mx-4 flex gap-3 overflow-x-auto px-4 pb-1">
+          <CatIcon label="All" active={!catId} onClick={() => chooseCat(null)} icon={<LayoutGrid className="h-6 w-6" />} />
+          {topCats.map((c) => (
+            <CatIcon key={c.id} label={c.name} active={catId === c.id} onClick={() => chooseCat(c.id)} icon={<span className="text-2xl leading-none">{c.icon || "🛍️"}</span>} />
           ))}
         </div>
+        {subCats.length > 0 && (
+          <div className="animate-fade-up scrollbar-none -mx-4 mt-3 flex gap-2 overflow-x-auto px-4">
+            {[{ id: null as string | null, name: `All ${activeCat?.name ?? ""}` }, ...subCats].map((c) => (
+              <button key={c.id ?? "all"} onClick={() => setSubId(c.id)}
+                className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-bold transition duration-300 active:scale-95 ${subId === c.id ? "bg-primary text-primary-foreground shadow-card" : "bg-card text-muted-foreground hover:text-foreground"}`}>
+                {c.name}
+              </button>
+            ))}
+          </div>
+        )}
         <div className="mt-4 grid grid-cols-2 gap-3 pb-28 sm:grid-cols-3 md:gap-5 lg:grid-cols-4">
           {filtered.map((p, i) => <ProductCard key={p.id} p={p} index={i} />)}
         </div>
@@ -158,6 +203,15 @@ function Home() {
       </section>
       <CartBar />
     </main>
+  );
+}
+
+function CatIcon({ label, active, onClick, icon }: { label: string; active: boolean; onClick: () => void; icon: ReactNode }) {
+  return (
+    <button onClick={onClick} aria-pressed={active} className="flex w-16 shrink-0 flex-col items-center gap-1.5 transition active:scale-95">
+      <span className={`flex h-14 w-14 items-center justify-center rounded-2xl shadow-card transition duration-300 ${active ? "bg-primary text-primary-foreground ring-4 ring-primary/20" : "bg-card text-foreground"}`}>{icon}</span>
+      <span className={`line-clamp-1 text-[11px] font-bold ${active ? "text-foreground" : "text-muted-foreground"}`}>{label}</span>
+    </button>
   );
 }
 

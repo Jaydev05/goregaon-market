@@ -44,18 +44,18 @@ function CartPage() {
       <section className="flex flex-col gap-3">
         <h1 className="font-display text-3xl font-extrabold tracking-tight">Cart ({cart.count})</h1>
         {cart.items.map((i) => (
-          <div key={i.product_id} className="animate-fade-up flex gap-3 rounded-3xl bg-card p-3 shadow-card">
+          <div key={i.key} className="animate-fade-up flex gap-3 rounded-3xl bg-card p-3 shadow-card">
             <div className="h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-secondary">{i.image && <img src={i.image} alt="" className="h-full w-full object-cover" />}</div>
             <div className="flex flex-1 flex-col">
-              <p className="line-clamp-2 text-sm font-medium">{i.name}</p>
+              <p className="line-clamp-2 text-sm font-medium">{i.combo_id && <span className="mr-1 rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-extrabold text-accent-foreground">COMBO</span>}{i.name.replace(/^Combo: /, "")}</p>
               <p className="text-sm"><span className="font-semibold">{inr(i.price)}</span>{i.mrp > i.price && <span className="ml-2 text-xs text-muted-foreground line-through">{inr(i.mrp)}</span>}</p>
               <div className="mt-auto flex items-center justify-between">
                 <div className="flex items-center rounded-full bg-secondary">
-                  <button className="p-1.5" onClick={() => cart.setQty(i.product_id, i.qty - 1)} aria-label="Decrease"><Minus className="h-3.5 w-3.5" /></button>
+                  <button className="p-1.5" onClick={() => cart.setQty(i.key, i.qty - 1)} aria-label="Decrease"><Minus className="h-3.5 w-3.5" /></button>
                   <span key={i.qty} className="animate-pop w-7 text-center text-sm font-semibold">{i.qty}</span>
-                  <button className="p-1.5" onClick={() => cart.setQty(i.product_id, i.qty + 1)} aria-label="Increase"><Plus className="h-3.5 w-3.5" /></button>
+                  <button className="p-1.5 disabled:opacity-40" disabled={i.qty >= Math.min(50, i.max ?? 50)} onClick={() => cart.setQty(i.key, i.qty + 1)} aria-label="Increase"><Plus className="h-3.5 w-3.5" /></button>
                 </div>
-                <button onClick={() => cart.remove(i.product_id)} className="text-muted-foreground hover:text-destructive" aria-label="Remove"><Trash2 className="h-4 w-4" /></button>
+                <button onClick={() => cart.remove(i.key)} className="text-muted-foreground hover:text-destructive" aria-label="Remove"><Trash2 className="h-4 w-4" /></button>
               </div>
             </div>
           </div>

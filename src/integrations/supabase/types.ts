@@ -47,6 +47,44 @@ export type Database = {
         }
         Relationships: []
       }
+      categories: {
+        Row: {
+          created_at: string
+          icon: string | null
+          id: string
+          is_active: boolean
+          name: string
+          parent_id: string | null
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          parent_id?: string | null
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          parent_id?: string | null
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       coin_transactions: {
         Row: {
           amount: number
@@ -71,6 +109,48 @@ export type Database = {
           order_id?: string | null
           reason?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      combo_offers: {
+        Row: {
+          combo_price: number
+          created_at: string
+          description: string | null
+          ends_at: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          items: Json
+          sort_order: number
+          starts_at: string | null
+          title: string
+        }
+        Insert: {
+          combo_price: number
+          created_at?: string
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          items?: Json
+          sort_order?: number
+          starts_at?: string | null
+          title: string
+        }
+        Update: {
+          combo_price?: number
+          created_at?: string
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          items?: Json
+          sort_order?: number
+          starts_at?: string | null
+          title?: string
         }
         Relationships: []
       }
@@ -236,9 +316,89 @@ export type Database = {
         }
         Relationships: []
       }
+      product_costs: {
+        Row: {
+          cost_price: number
+          product_id: string
+          updated_at: string
+        }
+        Insert: {
+          cost_price?: number
+          product_id: string
+          updated_at?: string
+        }
+        Update: {
+          cost_price?: number
+          product_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_costs_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: true
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_variants: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string | null
+          is_active: boolean
+          mrp: number
+          name: string
+          product_id: string
+          selling_price: number
+          sku: string | null
+          sort_order: number
+          stock: number
+          subtitle: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          mrp: number
+          name: string
+          product_id: string
+          selling_price: number
+          sku?: string | null
+          sort_order?: number
+          stock?: number
+          subtitle?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          mrp?: number
+          name?: string
+          product_id?: string
+          selling_price?: number
+          sku?: string | null
+          sort_order?: number
+          stock?: number
+          subtitle?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_variants_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           category: string
+          category_id: string | null
           created_at: string
           description: string
           id: string
@@ -249,9 +409,11 @@ export type Database = {
           name: string
           selling_price: number
           stock: number
+          subcategory_id: string | null
         }
         Insert: {
           category?: string
+          category_id?: string | null
           created_at?: string
           description?: string
           id?: string
@@ -262,9 +424,11 @@ export type Database = {
           name: string
           selling_price: number
           stock?: number
+          subcategory_id?: string | null
         }
         Update: {
           category?: string
+          category_id?: string | null
           created_at?: string
           description?: string
           id?: string
@@ -275,8 +439,24 @@ export type Database = {
           name?: string
           selling_price?: number
           stock?: number
+          subcategory_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_subcategory_id_fkey"
+            columns: ["subcategory_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -391,6 +571,32 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      variant_costs: {
+        Row: {
+          cost_price: number
+          updated_at: string
+          variant_id: string
+        }
+        Insert: {
+          cost_price?: number
+          updated_at?: string
+          variant_id: string
+        }
+        Update: {
+          cost_price?: number
+          updated_at?: string
+          variant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "variant_costs_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: true
+            referencedRelation: "product_variants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

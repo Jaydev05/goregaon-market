@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
+import { parseComboItems } from "./variants";
 
 function publicClient() {
   const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
@@ -19,13 +20,21 @@ function publicClient() {
 
 export const getCatalog = createServerFn({ method: "GET" }).handler(async () => {
   const sb = publicClient();
-  const [settings, banners, products] = await Promise.all([
+  const [settings, banners, products, categories, combos] = await Promise.all([
     sb.rpc("get_public_store_settings").single(),
     sb.from("banners").select("*").eq("is_active", true).order("sort_order"),
-    sb.from("products").select("*").eq("is_active", true).order("created_at", { ascending: false }),
+    sb.from("products").select("*, product_variants(*)").eq("is_active", true).order("created_at", { ascending: false }),
+    sb.from("categories").select("*").eq("is_active", true).order("sort_order"),
+    sb.from("combo_offers").select("*").order("sort_order"),
   ]);
   if (settings.error) throw new Error(settings.error.message);
-  return { settings: settings.data, banners: banners.data ?? [], products: products.data ?? [] };
+  return {
+    settings: settings.data,
+    banners: banners.data ?? [],
+    products: products.data ?? [],
+    categories: categories.data ?? [],
+    combos: (combos.data ?? []).map((c) => ({ ...c, items: parseComboItems(c.items) })),
+  };
 });
 
 export const getProduct = createServerFn({ method: "GET" })
@@ -35,6 +44,6 @@ export const getProduct = createServerFn({ method: "GET" })
   })
   .handler(async ({ data }) => {
     const sb = publicClient();
-    const { data: product } = await sb.from("products").select("*").eq("id", data.id).eq("is_active", true).maybeSingle();
+    const { data: product } = await sb.from("products").select("*, product_variants(*)").eq("id", data.id).eq("is_active", true).maybeSingle();
     return product;
   });
