@@ -1,13 +1,13 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
 // The store is server-rendered, so the Android app loads the live site (server.url).
-// Point it at your published address once the app is published.
+// Points at the published store address.
 const config: CapacitorConfig = {
-  appId: "com.goregaonmarket.app",
-  appName: "Goregaon Market",
+  appId: "com.goregaonmart.app",
+  appName: "Goregaon Mart",
   webDir: "dist",
   server: {
-    url: "https://id-preview--e2d81eac-ea9f-41a3-9e49-bba8d4cff146.lovable.app?forceHideBadge=true",
+    url: "https://goregaon-marketplace.lovable.app",
     cleartext: false,
     androidScheme: "https",
   },
