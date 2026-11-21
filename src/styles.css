@@ -173,11 +173,22 @@
     border-color: var(--color-border);
   }
 
+  html, body {
+    overflow-x: clip;
+    max-width: 100%;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
   body {
+    overscroll-behavior-y: none;
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-tap-highlight-color: transparent;
+  }
+  img, video, svg, canvas {
+    max-width: 100%;
   }
   h1, h2, h3, h4 {
     font-family: var(--font-display);

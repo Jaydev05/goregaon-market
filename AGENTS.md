@@ -40,3 +40,4 @@ use the editor.
 - Combos (`combo_offers.items` = [{product_id, variant_id, qty}]) are priced and stock-checked in `place_order`; order snapshots keep `components` so cancellation restocks them. Why: same server-side trust rule as single items.
 - Admin panel is one route (`/admin`) with section components in `src/components/admin/`; shopper pages use `src/components/shop/`.
 - Shoppers read store settings only through the `get_public_store_settings` database function (no phone); the `store_settings` table itself is admin-only. Why: keeps private contact fields out of public reads — add new public settings columns to that function too.
+- Android app uses Capacitor (`capacitor.config.ts`, webDir `dist`) loading the live site via `server.url`, because the store is server-rendered and has no static build; run `bun run cap:sync` (creates a placeholder `dist/index.html`). Keep layout safe-area aware (`env(safe-area-inset-*)`) for edge-to-edge phones.

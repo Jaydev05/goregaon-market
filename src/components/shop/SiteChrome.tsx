@@ -11,11 +11,11 @@ export function SiteHeader() {
   const { data } = useQuery(catalogQuery);
   const s = data?.settings;
   return (
-    <header className="glass sticky top-0 z-40 border-b border-border/50">
-      <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3">
-        <Link to="/" className="flex items-center gap-2 font-display text-lg font-extrabold tracking-tight">
-          <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-[11px] text-primary-foreground">GM</span>
-          {s?.store_name ?? "Goregaon Mart"}
+    <header className="glass sticky top-0 z-40 border-b border-border/50 pt-[env(safe-area-inset-top)]">
+      <div className="mx-auto flex min-w-0 max-w-6xl items-center gap-3 py-3 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]">
+        <Link to="/" className="flex min-w-0 items-center gap-2 font-display text-lg font-extrabold tracking-tight">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary text-[11px] text-primary-foreground">GM</span>
+          <span className="truncate">{s?.store_name ?? "Goregaon Mart"}</span>
         </Link>
         <span className="hidden items-center gap-1 rounded-full bg-secondary px-3 py-1.5 text-xs font-semibold sm:flex">
           <MapPin className="h-3.5 w-3.5" /> Delivery within {s?.delivery_radius_km ?? 8} km · {s?.delivery_eta_minutes ?? 45} min
@@ -29,7 +29,7 @@ export function SiteHeader() {
             {user ? "Account" : "Sign in"}
           </Link>
         </nav>
-        <Link to="/cart" data-cart-target className="relative ml-auto rounded-full bg-primary p-2.5 text-primary-foreground transition active:scale-90 md:ml-0" aria-label="Cart">
+        <Link to="/cart" data-cart-target className="relative ml-auto shrink-0 rounded-full bg-primary p-2.5 text-primary-foreground transition active:scale-90 md:ml-0" aria-label="Cart">
           <ShoppingCart className="h-5 w-5" />
           {count > 0 && (
             <span key={count} className="animate-pop absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[11px] font-bold text-accent-foreground">{count}</span>

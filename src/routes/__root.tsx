@@ -136,7 +136,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <CartProvider>
-          <div className="min-h-screen pb-28 md:pb-0">
+          <div className="min-h-screen pb-[calc(7rem+env(safe-area-inset-bottom))] md:pb-0">
             <SiteHeader />
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
             <Outlet />

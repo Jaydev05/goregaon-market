@@ -228,7 +228,7 @@ function CartBar() {
   const { count, subtotal } = useCart();
   if (count === 0) return null;
   return (
-    <Link to="/cart" className="animate-fade-up fixed inset-x-4 bottom-24 z-30 mx-auto flex max-w-md items-center gap-3 rounded-full bg-accent py-2 pl-2 pr-5 text-accent-foreground shadow-float md:bottom-6">
+    <Link to="/cart" className="animate-fade-up fixed inset-x-4 bottom-[calc(6rem+env(safe-area-inset-bottom))] z-30 mx-auto flex max-w-md items-center gap-3 rounded-full bg-accent py-2 pl-2 pr-5 text-accent-foreground shadow-float md:bottom-6">
       <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground"><ShoppingBag className="h-5 w-5" /></span>
       <span className="leading-tight"><span className="block text-xs font-semibold opacity-75">{count} item{count > 1 ? "s" : ""}</span><span key={subtotal} className="animate-pop block font-extrabold">{inr(subtotal)}</span></span>
       <span className="ml-auto flex items-center gap-1 text-sm font-extrabold">View cart <ArrowRight className="h-4 w-4" /></span>

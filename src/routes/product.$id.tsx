@@ -115,7 +115,7 @@ function ProductPage() {
               </div>
               <span className="text-sm text-muted-foreground">= {inr(o.price * qty)}</span>
             </div>
-            <div className="sticky bottom-24 grid grid-cols-2 gap-2 rounded-full bg-card/90 p-1.5 shadow-float backdrop-blur md:static md:bg-transparent md:p-0 md:shadow-none">
+            <div className="sticky bottom-[calc(6rem+env(safe-area-inset-bottom))] z-30 grid grid-cols-2 gap-2 rounded-full bg-card/90 p-1.5 shadow-float backdrop-blur md:static md:bg-transparent md:p-0 md:shadow-none">
               <Button size="lg" variant="outline" className="rounded-full transition active:scale-95" onClick={() => add(true)}>Add to cart</Button>
               <Button size="lg" className="rounded-full shadow-float transition active:scale-95" onClick={() => { add(); nav({ to: "/cart" }); }}>Buy now</Button>
             </div>
