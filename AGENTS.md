@@ -35,5 +35,8 @@ use the editor.
 - Customers cannot change their own `coins`/`segment` (trigger `protect_profile_fields`); trusted DB functions set `app.trusted` to bypass. Why: prevents self-granting coins.
 - All store-wide numbers (radius, min order, fees, coin rules, store location) live in the single `store_settings` row, editable in the admin panel; never hardcode them in UI. Why: admin must be able to change them.
 - Product/banner images go to the private `product-images` bucket and are stored as long-lived signed URLs (public buckets are blocked in this workspace).
+- Products may have options (`product_variants`); a trigger keeps the product's price (cheapest option) and total stock in sync, and `place_order` requires a `variant_id` when active options exist. Cart lines are keyed by `src/lib/variants.ts` `cartKey` (product+option or combo). Why: one source of truth for option pricing/stock.
+- Cost prices live only in admin-only `product_costs` / `variant_costs` tables, never on shopper-readable rows. Why: shoppers must never see cost.
+- Combos (`combo_offers.items` = [{product_id, variant_id, qty}]) are priced and stock-checked in `place_order`; order snapshots keep `components` so cancellation restocks them. Why: same server-side trust rule as single items.
 - Admin panel is one route (`/admin`) with section components in `src/components/admin/`; shopper pages use `src/components/shop/`.
 - Shoppers read store settings only through the `get_public_store_settings` database function (no phone); the `store_settings` table itself is admin-only. Why: keeps private contact fields out of public reads — add new public settings columns to that function too.

@@ -5,6 +5,8 @@
 - [x] Customer: sign up/in, orders + status tracking, coins, account
 - [x] Admin panel: dashboard, products (images), orders, customers, coupons, banners, expenses, settings
 - [x] Tests for pricing rules
+- [x] Stage 1: sizes/flavours with private cost & profit, categories/subcategories, combo offers (admin + safe ordering)
+- [x] Stage 2: option pickers on cards/product page, category icons + subcategory chips, combo showcase, option-aware search and cart
 - [ ] Online payment gateway (owner will decide later)
 - [ ] Live rider map tracking (needs a delivery-partner app + map service)
 - [ ] App Store / Play Store packaging (needs owner's developer accounts)
