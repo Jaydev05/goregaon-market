@@ -1,7 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { LovableMark } from "@lovable.dev/cloud-auth-js/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -70,8 +69,11 @@ function AuthPage() {
     }
   }
 
-  async function social(provider: "google" | "lovable") {
-    const r = await lovable.auth.signInWithOAuth(provider, { redirect_uri: window.location.origin });
+  async function social(provider: "google") {
+    const r = await lovable.auth.signInWithOAuth(provider, {
+      redirect_uri: window.location.origin,
+      extraParams: { prompt: "select_account" },
+    });
     if (r.error) toast.error(r.error.message ?? "Sign-in failed");
   }
 
@@ -89,9 +91,6 @@ function AuthPage() {
               className="flex h-10 items-center justify-center gap-[10px] rounded-md px-3 text-sm font-medium">
               <GoogleLogo /> Continue with Google
             </button>
-            <Button type="button" variant="outline" className="h-10" onClick={() => social("lovable")}>
-              <LovableMark className="size-[18px]" /> Continue with Lovable
-            </Button>
           </div>
           <div className="flex items-center gap-3 text-xs text-muted-foreground"><span className="h-px flex-1 bg-border" />or with email<span className="h-px flex-1 bg-border" /></div>
           <Tabs value={mode} onValueChange={(v) => setMode(v as "signin" | "signup")}>
