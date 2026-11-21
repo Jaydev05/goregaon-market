@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.goregaonmart.app",
+    "sha256_cert_fingerprints": ["80:2F:70:07:10:44:4D:F6:2B:CA:C4:47:63:29:3C:A4:52:62:43:F5:FE:84:2A:4E:EE:B2:B6:94:35:3A:57:8F"]
+  }
+}]
